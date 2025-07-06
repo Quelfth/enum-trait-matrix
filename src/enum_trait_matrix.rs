@@ -1,4 +1,4 @@
-use proc_macro2::{Span, TokenStream};
+use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{
     Field, Fields, FieldsNamed, FieldsUnnamed, FnArg, ItemEnum, ItemMod, ItemTrait, PatType, Receiver, Signature, TraitItem, TraitItemFn, Variant
@@ -8,7 +8,7 @@ use crate::parse::ParsedModule;
 
 
 pub fn enum_trait_matrix(module: ItemMod) -> TokenStream {
-    let ParsedModule { vis, name, r#enum, r#trait } = ParsedModule::parse(module);
+    let ParsedModule { vis, name, r#enum, r#trait, uses } = ParsedModule::parse(module);
     
     let structs = quote_structs(r#enum.clone());
     let froms = quote_froms(r#enum.clone());
@@ -18,6 +18,8 @@ pub fn enum_trait_matrix(module: ItemMod) -> TokenStream {
     
     quote!{
         #vis mod #name {
+            #(#uses)*
+            
             #structs
             #froms
             #r#enum

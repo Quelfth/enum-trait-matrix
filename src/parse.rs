@@ -1,4 +1,4 @@
-use syn::{Ident, Item, ItemEnum, ItemMod, ItemTrait, Visibility};
+use syn::{Ident, Item, ItemEnum, ItemMod, ItemTrait, ItemUse, Visibility};
 
 
 pub struct ParsedModule {
@@ -6,6 +6,7 @@ pub struct ParsedModule {
     pub name: Ident,
     pub r#enum: ItemEnum,
     pub r#trait: ItemTrait,
+    pub uses: Vec<ItemUse>,
 }
 
 impl ParsedModule {
@@ -16,6 +17,8 @@ impl ParsedModule {
         
         let mut r#enum: Option<ItemEnum> = None;
         let mut r#trait: Option<ItemTrait> = None;
+        
+        let mut uses = Vec::new();
         
         for item in content {
             match item {
@@ -33,6 +36,9 @@ impl ParsedModule {
                         panic!("Only one trait item is allowed.");
                     }
                 }
+                Item::Use(item) => {
+                    uses.push(item);
+                }
                 _ => panic!("Invalid item in #[enum-trait-matrix].  Only enum and trait items are allowed.")
             }
         }
@@ -47,6 +53,7 @@ impl ParsedModule {
             name: ident,
             r#enum,
             r#trait,
+            uses,
         }
     }
 }
